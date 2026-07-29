@@ -1,0 +1,2 @@
+auc_train,auc_holdout,avg_precision_holdout,base_rate_holdout,logit_pseudo_r2_M3,OR_degraded_naive,OR_degraded_controls,OR_degraded_plus_service,OR_degraded_full,pct_period_effect_mediated,n_train,n_test
+0.7285,0.7206,0.7511,0.5614,0.103,0.9611,0.7654,0.7929,0.8731,0.1321,30779,9173

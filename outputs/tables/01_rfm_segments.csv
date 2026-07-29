@@ -1,0 +1,8 @@
+rfm_segment,users,avg_freq,avg_monetary,avg_recency,repeat_share,pct_of_base
+Champions,2099,8.12,678.71,77.83,1.0,15.0
+At Risk (high value),1785,4.09,367.08,374.8,1.0,12.8
+Can't Lose Them,749,1.36,345.13,401.83,0.36,5.4
+Loyal,3255,3.01,230.78,154.34,0.85,23.3
+New / Promising,1846,1.0,109.8,91.64,0.0,13.2
+Needs Attention,1176,1.0,108.3,223.6,0.0,8.4
+Hibernating,3049,1.18,76.84,400.86,0.18,21.8

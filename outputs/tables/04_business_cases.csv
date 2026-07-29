@@ -1,0 +1,13 @@
+intervention,tier,addressable_yr,segment_aov,value_per_repeat,modelled_uplift_pp,realisation,effective_uplift_pp,incremental_repeats_yr,incremental_gmv_yr,revenue_contribution_yr,cost_avoided_yr,total_benefit_yr,cost_yr,net_yr,roi,breakeven_uplift_pp,clears_gate
+1. Tiered service recovery,"A: automated, 2 tickets (conservative)",12920,128.44,127.72,3.68,0.35,1.29,166,50550.0,21231.0,34884.0,56115.0,35336.0,20779.0,0.59,0.03,True
+1. Tiered service recovery,"B: human callback, 3+ tickets (conservative)",4160,145.43,144.61,16.78,0.35,5.87,244,84116.0,35329.0,27456.0,62785.0,57440.0,5345.0,0.09,4.98,True
+1. Tiered service recovery,"A: automated, 2 tickets (base)",12920,128.44,127.72,3.68,0.5,1.84,237,72214.0,30330.0,34884.0,65214.0,35336.0,29878.0,0.85,0.03,True
+1. Tiered service recovery,"B: human callback, 3+ tickets (base)",4160,145.43,144.61,16.78,0.5,8.39,349,120165.0,50469.0,27456.0,77925.0,57440.0,20485.0,0.36,4.98,True
+1. Tiered service recovery,"A: automated, 2 tickets (optimistic)",12920,128.44,127.72,3.68,0.65,2.39,309,93879.0,39429.0,34884.0,74313.0,35336.0,38977.0,1.1,0.03,True
+1. Tiered service recovery,"B: human callback, 3+ tickets (optimistic)",4160,145.43,144.61,16.78,0.65,10.91,454,156215.0,65610.0,27456.0,93066.0,57440.0,35626.0,0.62,4.98,True
+2. Electronics/Home post-purchase fix,conservative,85240,176.44,175.45,2.62,0.4,1.05,892,372682.0,156526.0,108026.0,264552.0,171310.0,93242.0,0.54,0.42,True
+2. Electronics/Home post-purchase fix,base,85240,176.44,175.45,2.62,0.6,1.57,1338,559023.0,234789.0,108026.0,342815.0,171310.0,171505.0,1.0,0.42,True
+2. Electronics/Home post-purchase fix,optimistic,85240,176.44,175.45,2.62,0.8,2.09,1784,745363.0,313053.0,108026.0,421079.0,171310.0,249769.0,1.46,0.42,True
+3. Coupon-dependency weaning,conservative,26760,85.22,84.74,3.73,0.3,1.12,300,60497.0,25409.0,35189.0,60597.0,59084.0,1513.0,0.03,1.05,True
+3. Coupon-dependency weaning,base,26760,85.22,84.74,3.73,0.5,1.87,500,100828.0,42348.0,35189.0,77537.0,59084.0,18453.0,0.31,1.05,True
+3. Coupon-dependency weaning,optimistic,26760,85.22,84.74,3.73,0.7,2.61,700,141159.0,59287.0,35189.0,94476.0,59084.0,35392.0,0.6,1.05,True

@@ -1,0 +1,10 @@
+,dtype,n_missing,pct_missing,n_unique
+order_id,object,0,0.0,42022
+user_id,object,0,0.0,14099
+order_date,object,0,0.0,41940
+order_amount,float64,1065,2.49,16554
+category,object,513,1.2,30
+discount_used,object,0,0.0,4
+cs_tickets,int64,0,0.0,9
+is_returned,int64,0,0.0,2
+channel,object,0,0.0,5

@@ -1,0 +1,5 @@
+model,degraded_coef,degraded_OR,p_value,pseudo_r2,log_lik
+M0 naive (period only),-0.0397,0.9611,0.09509237442217718,0.0001,-27318.9
+M1 + composition controls,-0.2673,0.7654,1.234475898088255e-33,0.0873,-24936.9
+M2 + service variables,-0.232,0.7929,3.012305070625822e-25,0.0919,-24809.5
+M3 + coupon dependency,-0.1357,0.8731,4.004845997538433e-09,0.103,-24506.7

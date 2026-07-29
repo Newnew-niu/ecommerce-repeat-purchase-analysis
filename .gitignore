@@ -1,0 +1,18 @@
+# Generated data -- rebuilt deterministically by src/00_make_dataset.py (seeded).
+# ~19 MB of fully derived files; regenerating takes about 2 minutes.
+data/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# Local editor / tooling state
+.claude/settings.local.json
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,80 @@
+==============================================================================
+PHASE 1 -- DATA QUALITY DIAGNOSTIC
+==============================================================================
+
+Raw extract: 42,776 rows x 9 columns
+Snapshot date: 2025-06-30
+
+--- Column profile (as loaded) ---
+                 dtype  n_missing  pct_missing  n_unique
+order_id        object          0         0.00     42022
+user_id         object          0         0.00     14099
+order_date      object          0         0.00     41940
+order_amount   float64       1065         2.49     16554
+category        object        513         1.20        30
+discount_used   object          0         0.00         4
+cs_tickets       int64          0         0.00         9
+is_returned      int64          0         0.00         2
+channel         object          0         0.00         5
+
+------------------------------------------------------------------------------
+CLEANING ACTIONS
+------------------------------------------------------------------------------
+[2.1] Parsed dates: 40,638 ISO + 2,138 US M/D/Y format.
+      Unparseable after both attempts: 0
+[2.2] Orders dated after snapshot: 128 (max 2026-08-01 00:00:00). Dropped -- clock-skew artefact.
+[2.3] Internal test accounts: 120 rows across 120 user_ids. Dropped.
+[2.4] Duplicate order_id rows: 745 (1.75% of remaining). Kept first occurrence.
+[2.5] category: collapsed 30 raw string variants -> 7 canonical values.
+      503 blank/null categories relabelled 'Unknown' (kept -- the order itself is valid).
+[2.6] discount_used carries 4 distinct raw tokens ['0', '1', 'N', 'Y'] -- one upstream service writes Y/N, the other 1/0. Coerced to 0/1; 0 uncoercible.
+[2.7] cs_tickets == -1 sentinel ('unknown' from legacy CRM): 378 rows. Set to 0 and flagged -- the modal value is 0 (80.4%), so imputing 0 is the conservative choice and biases the ticket effect *downward*, not up.
+[2.8a] Negative amounts: 165. These are refunds written back with the wrong sign -- the purchase was real, so absolute value is taken and the row flagged.
+[2.8b] Zero amounts: 126. Fully-comped orders -- retained (they are genuine engagement) but excluded from AOV statistics.
+[2.8c] Missing amounts: 1,044 (2.50%). Imputed with the category median (amount is strongly category-driven; a global median would distort Electronics by ~4x).
+[2.8d] Amounts above the 99.9th pct ($938): 42. Winsorised to the cap rather than dropped -- they are plausible bulk orders, but left raw they would dominate every mean.
+
+--- Row audit ---
+raw rows                            42,776
+  - future_dated                      -128
+  - test_accounts                     -120
+  - duplicate_order_id                -745
+clean rows                          41,783  (97.68% retained)
+unique users                        13,959
+date range                       2024-01-01 -> 2025-06-29
+total GMV                        $    3,653,883
+
+==============================================================================
+FEATURE ENGINEERING
+==============================================================================
+
+Censoring: 1,831 orders (4.4%) fall inside the trailing 30-day window and cannot yet be scored. Excluded from all repeat-rate and model calculations.
+
+User feature table: 13,959 users x 22 features
+
+--- RFM segment sizes ---
+                      users  avg_freq  avg_monetary  avg_recency  repeat_share  pct_of_base
+rfm_segment                                                                                
+Champions              2099      8.12        678.71        77.83          1.00         15.0
+At Risk (high value)   1785      4.09        367.08       374.80          1.00         12.8
+Can't Lose Them         749      1.36        345.13       401.83          0.36          5.4
+Loyal                  3255      3.01        230.78       154.34          0.85         23.3
+New / Promising        1846      1.00        109.80        91.64          0.00         13.2
+Needs Attention        1176      1.00        108.30       223.60          0.00          8.4
+Hibernating            3049      1.18         76.84       400.86          0.18         21.8
+
+Modelling table: 39,952 scoreable orders (base 30-day repeat rate = 56.8%)
+
+--- Engineered feature summary (user level) ---
+                 count    mean     std  min     25%     50%     75%    90%      99%      max  missing
+frequency      13959.0    2.99    3.60  1.0    1.00    2.00    3.00    7.0    20.00    39.00        0
+monetary       13959.0  261.76  344.38  0.0   65.90  142.91  316.88  624.0  1682.83  6777.80        0
+aov            13959.0   97.93   94.31  0.0   43.58   68.98  114.80  200.4   487.94   938.09        0
+recency_days   13959.0  235.70  150.61  0.0  109.00  223.00  357.00  454.0   533.00   545.00        0
+tenure_days    13959.0   48.87   86.56  0.0    0.00    7.00   60.00  162.0   406.00   537.00        0
+avg_gap_days    7499.0   27.04   25.92  1.0   12.00   18.00   32.27   58.0   132.00   247.50     6460
+total_tickets  13959.0    0.69    1.26  0.0    0.00    0.00    1.00    2.0     6.00    16.00        0
+max_tickets    13959.0    0.49    0.74  0.0    0.00    0.00    1.00    1.0     3.00     7.00        0
+return_rate    13959.0    0.13    0.27  0.0    0.00    0.00    0.10    0.5     1.00     1.00        0
+discount_rate  13959.0    0.47    0.41  0.0    0.00    0.50    1.00    1.0     1.00     1.00        0
+n_categories   13959.0    1.63    0.99  1.0    1.00    1.00    2.00    3.0     5.00     7.00        0

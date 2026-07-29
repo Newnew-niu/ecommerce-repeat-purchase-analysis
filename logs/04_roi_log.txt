@@ -1,0 +1,147 @@
+==============================================================================
+PHASE 4 -- BUSINESS CASE
+==============================================================================
+
+Baseline quarter: 2025Q1 (last complete quarter clear of the 30-day censoring window)
+  scoreable orders in extract   7,631
+  extract is a 10% user sample -> gross-up factor x10
+  implied annual GMV            $26,758,823
+  implied annual contribution   $11,238,705 (at 42.0% margin)
+  blended AOV                   $87.66
+  30-day repeat                 55.9%
+
+--- Observed continuation rate by lifecycle depth ---
+             size    mean
+cum_orders               
+0           13513  0.4392
+1            7246  0.5184
+2            4542  0.5854
+3            3138  0.6256
+4            2288  0.6774
+5            1758  0.6780
+6            1360  0.7096
+7            1089  0.7227
+
+Downstream multiplier: one incremental repeat is worth 2.37 orders in expectation (itself + 1.37 follow-ons from the OBSERVED continuation chain, capped at 8 steps). Capped and observation-based, so it understates rather than flatters.
+
+Value of one incremental repeat, by segment AOV:
+  blended        AOV $  87.66 -> $  87.17 per repeat
+  Electronics    AOV $ 253.15 -> $ 251.73 per repeat
+  Home           AOV $ 105.75 -> $ 105.16 per repeat
+  Grocery        AOV $  32.17 -> $  31.99 per repeat
+Targeting where AOV is high is not a detail -- it is most of the business case.
+
+==============================================================================
+INITIATIVE 1 -- Tiered service recovery before the cliff
+==============================================================================
+
+Addressable in 2025Q1 extract: 323 orders at exactly 2 tickets, 104 at 3+. Grossed up: 12,920 and 4,160 cases/yr.
+  AOV of 2-ticket orders  $128.44
+  AOV of 3+-ticket orders $145.43
+  (both well above the $87.66 blended AOV -- complaints concentrate in expensive baskets, which is what makes this worth doing)
+
+Model counterfactual: 2 tickets -> 1 is worth +3.7 pp, 3 tickets -> 1 is worth +16.8 pp.
+The raw observational 2->3 gap is ~18 pp. Not used: it embeds selection (customers already leaving complain more on the way out).
+
+COST DESIGN -- this is where the initiative lives or dies. A human callback is fully loaded at ~$9-14. Tier A's modelled uplift cannot cover that, so Tier A must be automated. Tier B's 16.8 pp can. The tiering is not a presentation choice, it falls out of the break-even arithmetic.
+
+Tier A: automated apology + priority re-routing + service credit, $0.80/case, $25k build. Assumes 0.45 downstream contacts avoided per case.
+Tier B: senior-agent callback for escalated cases, $9.00/case, $20k setup. Assumes 1.10 downstream contacts avoided per case.
+
+==============================================================================
+INITIATIVE 2 -- Fix the Electronics & Home post-purchase experience
+==============================================================================
+
+             orders  repeat  tickets      aov  returns
+category                                              
+Beauty         8899   0.659    0.132   42.245    0.063
+Electronics    5133   0.358    0.406  253.153    0.146
+Grocery        7394   0.697    0.099   32.174    0.023
+Home           6382   0.481    0.323  105.750    0.107
+
+Electronics + Home: 27.9% of orders, $176.44 AOV, and the two worst repeat rates.
+Model counterfactual -- zeroing support contacts in these categories is worth 2.62 pp of repeat (order-weighted). That is the CEILING for a fix that only addresses contacts.
+Phase 2 root cause: Electronics avg tickets 0.24 -> 0.69 and Home 0.25 -> 0.42 between 2024-01 and 2025-06. Fulfilment and product-information problem, not a contact-centre capacity problem.
+
+Cost-to-serve today: 0.510 tickets/order x $6.00 = $3.06 per order. A 30% reduction is assumed, i.e. 0.153 contacts avoided per order.
+
+Unit cost $0.25/order (proactive delivery comms + spec-content remediation, amortised), $150k fixed (content rebuild, inbound QC sampling programme). Plus $0.35/order assumed reverse-logistics saving from better expectations.
+
+==============================================================================
+INITIATIVE 3 -- Wean the coupon-dependent segment
+==============================================================================
+
+Among users with >=3 prior orders:
+  coupon-independent (<=40% discounted): 72.9% repeat, n = 9,439
+  coupon-dependent   (>=60% discounted): 63.8% repeat, n = 2,135
+  observational gap: 9.1 pp
+  addressable: 669 orders in 2025Q1 extract -> 26,760/yr
+
+Planning number: Phase 3 AME is 14.9 pp per full unit of dependency. A realistic programme shifts a user's coupon rate by ~0.25, giving 3.7 pp -- deliberately below the 9.1 pp observational gap.
+
+REVERSE CAUSALITY WARNING: low-intent users seek coupons, so an unknown part of the observational gap is selection running backwards. Of the three initiatives this has the weakest causal identification. It is therefore specified as a randomised holdout test, not a rollout.
+
+Unit economics: avg coupon ~12% of AOV = $10.52. Cutting dependency 0.25 with half sticking recovers $1.31/order in margin, against $0.90/order CRM cost.
+
+==============================================================================
+CONSOLIDATED BUSINESS CASE (annualised, contribution margin)
+==============================================================================
+
+                         intervention                                         tier  addressable_yr  segment_aov  effective_uplift_pp  incremental_repeats_yr  incremental_gmv_yr  revenue_contribution_yr  cost_avoided_yr  cost_yr   net_yr  roi  breakeven_uplift_pp  clears_gate
+           1. Tiered service recovery       A: automated, 2 tickets (conservative)           12920       128.44                 1.29                     166             50550.0                  21231.0          34884.0  35336.0  20779.0 0.59                 0.03         True
+           1. Tiered service recovery B: human callback, 3+ tickets (conservative)            4160       145.43                 5.87                     244             84116.0                  35329.0          27456.0  57440.0   5345.0 0.09                 4.98         True
+           1. Tiered service recovery               A: automated, 2 tickets (base)           12920       128.44                 1.84                     237             72214.0                  30330.0          34884.0  35336.0  29878.0 0.85                 0.03         True
+           1. Tiered service recovery         B: human callback, 3+ tickets (base)            4160       145.43                 8.39                     349            120165.0                  50469.0          27456.0  57440.0  20485.0 0.36                 4.98         True
+           1. Tiered service recovery         A: automated, 2 tickets (optimistic)           12920       128.44                 2.39                     309             93879.0                  39429.0          34884.0  35336.0  38977.0 1.10                 0.03         True
+           1. Tiered service recovery   B: human callback, 3+ tickets (optimistic)            4160       145.43                10.91                     454            156215.0                  65610.0          27456.0  57440.0  35626.0 0.62                 4.98         True
+2. Electronics/Home post-purchase fix                                 conservative           85240       176.44                 1.05                     892            372682.0                 156526.0         108026.0 171310.0  93242.0 0.54                 0.42         True
+2. Electronics/Home post-purchase fix                                         base           85240       176.44                 1.57                    1338            559023.0                 234789.0         108026.0 171310.0 171505.0 1.00                 0.42         True
+2. Electronics/Home post-purchase fix                                   optimistic           85240       176.44                 2.09                    1784            745363.0                 313053.0         108026.0 171310.0 249769.0 1.46                 0.42         True
+         3. Coupon-dependency weaning                                 conservative           26760        85.22                 1.12                     300             60497.0                  25409.0          35189.0  59084.0   1513.0 0.03                 1.05         True
+         3. Coupon-dependency weaning                                         base           26760        85.22                 1.87                     500            100828.0                  42348.0          35189.0  59084.0  18453.0 0.31                 1.05         True
+         3. Coupon-dependency weaning                                   optimistic           26760        85.22                 2.61                     700            141159.0                  59287.0          35189.0  59084.0  35392.0 0.60                 1.05         True
+
+--- BASE CASE ---
+  [PASS] 1. Tiered service recovery               A: automated, 2 tickets (base)   net    $29,878  ROI   0.85x  (needs 0.03 pp, delivers 1.84 pp)
+  [PASS] 1. Tiered service recovery               B: human callback, 3+ tickets (base) net    $20,485  ROI   0.36x  (needs 4.98 pp, delivers 8.39 pp)
+  [PASS] 2. Electronics/Home post-purchase fix    base                             net   $171,505  ROI   1.00x  (needs 0.42 pp, delivers 1.57 pp)
+  [PASS] 3. Coupon-dependency weaning             base                             net    $18,453  ROI   0.31x  (needs 1.05 pp, delivers 1.87 pp)
+
+--- RECOMMENDED PORTFOLIO (initiatives clearing the break-even gate) ---
+  incremental GMV                        $852,230
+  revenue contribution                   $357,936
+  cost-to-serve avoided                  $205,555
+  total benefit                          $563,491
+  programme cost                         $323,170
+  NET CONTRIBUTION                       $240,321
+  NET ROI                                   0.74x
+  incremental repeat orders/yr              2,424
+
+  Conservative case (gate-clearing only): net $120,879 across 4 initiatives
+
+  Optimistic case (gate-clearing only): net $359,764 across 4 initiatives
+
+  Scale check: recommended incremental GMV is 3.2% of the $26,758,823 annual run-rate, and net contribution is 2.1% of annual contribution. Retention programmes that claim more than a few points of either are usually double-counting.
+
+--- What 'recovery' means in user terms ---
+M+1 retention fell 7.6 pp (34.7% -> 27.2%). Against the 57,860 users acquired since 2024-11, that is ~4,339 users who would have returned under the old service level and did not.
+The recommended portfolio delivers 2,424 incremental repeat orders/yr. This is a partial recovery by design: Phase 3 showed ~51% of the controlled decline sits in systems the order log cannot observe (delivery speed, stockouts, assortment). Closing the rest needs instrumentation we do not currently have.
+
+------------------------------------------------------------------------------
+SENSITIVITY -- what breaks the case?
+------------------------------------------------------------------------------
+
+Net annual contribution ($) of the recommended portfolio:
+ltv_multiplier         1.00      2.37      3.08
+uplift_multiplier                              
+0.25               -79827.0  -28149.0   -1309.0
+0.50               -42040.0   61317.0  114996.0
+0.75                -4252.0  150782.0  231302.0
+1.00                33535.0  240248.0  347607.0
+1.25                71323.0  329714.0  463913.0
+1.50               109111.0  419180.0  580218.0
+
+  13/18 scenarios are value-positive. Range $-79,827 .. $580,218.
+  At HALF the modelled uplift the portfolio goes negative when the LTV multiplier is [1.0] -- i.e. the case DOES depend on incremental repeats generating follow-on orders. Flagged, not hidden.
+
+  Floor test -- if the repeat uplift were EXACTLY ZERO and only the cost-to-serve savings landed, the portfolio nets $-117,615. So some repeat uplift is required; there is no free floor.

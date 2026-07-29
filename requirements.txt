@@ -1,0 +1,9 @@
+# Versions this analysis was built and verified on (Python 3.10.10).
+# The pipeline is seeded and reproduces bit-identically on these pins.
+pandas==2.2.3
+numpy==2.2.5
+scipy==1.15.3
+scikit-learn==1.6.1
+statsmodels==0.14.6
+matplotlib==3.10.7
+seaborn==0.13.2
