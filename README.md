@@ -97,7 +97,7 @@ Repeat rate, retention rate and cohort retention are not interchangeable; see [`
 
 ## Dashboard
 
-A Streamlit dashboard with KPI tiles, filters (month range, acquisition channel, category) and six tabs. It uses the same KPI code as the analysis (`src/kpis.py`), and an automated test checks that its numbers match the analysis tables. Live demo: [ecommerce-repeat-purchase-analysis.streamlit.app](https://ecommerce-repeat-purchase-analysis-4msj8yiubhkqhq7grmvqzk.streamlit.app/) (Streamlit Community Cloud, Python 3.12; the first visit after a period of inactivity takes ~1 minute while the app wakes up and generates its data).
+A Streamlit dashboard with KPI tiles, filters (month range, acquisition channel, category) and six tabs. It uses the same KPI code as the analysis (`src/kpis.py`), and an automated test checks that its numbers match the analysis tables. Live demo: [repeat-purchase-dashboard.streamlit.app](https://repeat-purchase-dashboard.streamlit.app/) (Streamlit Community Cloud, Python 3.12; the first visit after a period of inactivity takes ~1 minute while the app wakes up and generates its data).
 
 | Overview | Cohorts |
 |---|---|
