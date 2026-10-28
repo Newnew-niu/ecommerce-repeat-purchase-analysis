@@ -1,0 +1,98 @@
+==============================================================================
+PHASE 5 -- KPI DICTIONARY, CUSTOMER COMPARISONS, ROBUSTNESS
+==============================================================================
+
+------------------------------------------------------------------------------
+1. KPI TABLE (definitions in docs/kpi_definitions.md)
+------------------------------------------------------------------------------
+
+                         scope                                           kpi  unit        value     numerator denominator      counting_unit
+Full period (2024-01..2025-06)                                        Orders count   41783.0000                                        order
+Full period (2024-01..2025-06)                              Active customers count   13959.0000                                     customer
+Full period (2024-01..2025-06)                                           GMV   usd 3653882.7014                                        order
+Full period (2024-01..2025-06)                     Average order value (AOV)   usd      87.4490  3653882.7014       41783              order
+Full period (2024-01..2025-06) Purchase frequency (orders / active customer) ratio       2.9933         41783       13959           customer
+Full period (2024-01..2025-06)     Order-level 30-day repeat rate (headline)  rate       0.5681         22697       39952              order
+Full period (2024-01..2025-06)               New-customer 30-day repeat rate  rate       0.4392          5935       13513       new customer
+Full period (2024-01..2025-06)                   90-day repeat customer rate  rate       0.5179          6405       12368       new customer
+Full period (2024-01..2025-06)     Median days to 2nd order (repeaters only)  days      15.0000                           repeating customer
+          Baseline (2024Q2-Q3)                                        Orders count   14486.0000                                        order
+          Baseline (2024Q2-Q3)                              Active customers count    5816.0000                                     customer
+          Baseline (2024Q2-Q3)                                           GMV   usd 1293407.2488                                        order
+          Baseline (2024Q2-Q3)                     Average order value (AOV)   usd      89.2867  1293407.2488       14486              order
+          Baseline (2024Q2-Q3) Purchase frequency (orders / active customer) ratio       2.4907         14486        5816           customer
+          Baseline (2024Q2-Q3)     Order-level 30-day repeat rate (headline)  rate       0.5825          8438       14486              order
+          Baseline (2024Q2-Q3)               New-customer 30-day repeat rate  rate       0.4625          2281        4932       new customer
+          Baseline (2024Q2-Q3)                   90-day repeat customer rate  rate       0.5416          2671        4932       new customer
+          Baseline (2024Q2-Q3)     Median days to 2nd order (repeaters only)  days      15.0000                           repeating customer
+            Recent (2025Q1-Q2)                                        Orders count   13772.0000                                        order
+            Recent (2025Q1-Q2)                              Active customers count    5485.0000                                     customer
+            Recent (2025Q1-Q2)                                           GMV   usd 1195765.1714                                        order
+            Recent (2025Q1-Q2)                     Average order value (AOV)   usd      86.8258  1195765.1714       13772              order
+            Recent (2025Q1-Q2) Purchase frequency (orders / active customer) ratio       2.5108         13772        5485           customer
+            Recent (2025Q1-Q2)     Order-level 30-day repeat rate (headline)  rate       0.5626          6718       11941              order
+            Recent (2025Q1-Q2)               New-customer 30-day repeat rate  rate       0.3873          1242        3207       new customer
+            Recent (2025Q1-Q2)                   90-day repeat customer rate  rate       0.4617           952        2062       new customer
+            Recent (2025Q1-Q2)     Median days to 2nd order (repeaters only)  days      14.0000                           repeating customer
+
+Cohort M+1 retention: 2024-01..09 mean 34.7%, 2024-11..2025-05 mean 27.2% (unweighted mean of cohort rates, as in Phase 2)
+
+NOTE: the 90-day repeat customer rate for 'Recent' only includes customers acquired by 2025-04-01 (90 days of observation needed); the 30-day rate includes those acquired by 2025-05-31. Windows are never compared across unequal observation periods.
+
+------------------------------------------------------------------------------
+2. FIRST-TIME vs REPEAT ORDERS AND CUSTOMERS
+------------------------------------------------------------------------------
+
+              orders           gmv      aov  coupon_share  avg_tickets  return_rate  gmv_share
+order_type                                                                                    
+First order    13959  1.262871e+06  90.4700        0.4058       0.2299       0.1186     0.3456
+Repeat order   27824  2.391012e+06  85.9334        0.4393       0.2296       0.1143     0.6544
+
+                             customers           gmv  avg_orders   avg_aov  avg_lifetime_gmv  customer_share  gmv_share
+customer_type                                                                                                          
+One-time customer                 6460  7.143411e+05      1.0000  110.5791          110.5791          0.4628     0.1955
+Repeat customer (2+ orders)       7499  2.939542e+06      4.7104   87.0346          391.9911          0.5372     0.8045
+
+>>> Repeat customers are 53.7% of customers but 80.5% of GMV. Their AOV is LOWER than one-time customers' ($87.03 vs $110.58) -- their value comes from frequency, not basket size.
+CAVEAT: 'ever ordered twice' is tenure-biased -- customers acquired in 2025 have had less time to reorder. Used here for GMV attribution only; trend comparisons use the fixed-window metrics in section 1.
+
+--- GMV by RFM segment ---
+                      customers           gmv  customer_share  gmv_share
+rfm_segment                                                             
+Champions                  2099  1.424623e+06          0.1504     0.3899
+Loyal                      3255  7.511962e+05          0.2332     0.2056
+At Risk (high value)       1785  6.552302e+05          0.1279     0.1793
+Can't Lose Them             749  2.585046e+05          0.0537     0.0707
+Hibernating                3049  2.342733e+05          0.2184     0.0641
+New / Promising            1846  2.026946e+05          0.1322     0.0555
+Needs Attention            1176  1.273611e+05          0.0842     0.0349
+
+------------------------------------------------------------------------------
+3. TIME TO SECOND ORDER
+------------------------------------------------------------------------------
+Customers acquired <= 2025-01-01: 10,306; 57.1% placed a 2nd order within 180 days.
+Among them, days to 2nd order: p25 9, median 15, p75 23, p90 77
+79.8% of 2nd orders placed within 180 days arrive within 30 days.
+CAVEAT: on this SIMULATED data the break at day 30 is partly built in -- 00_make_dataset.py draws 'repeat within 30 days' gaps from a 1-30 day distribution. So this chart illustrates the method; it does not independently validate the 30-day window. On real data, pick the window from this distribution (and see the 60/90-day sensitivity in section 4.1).
+
+------------------------------------------------------------------------------
+4. ROBUSTNESS CHECKS
+------------------------------------------------------------------------------
+
+4.1 New-customer repeat by window. Baseline cohorts 2024-04-01..2024-09-30 (n=4,932), recent cohorts 2024-11-01..2025-03-31 (n=4,195). Same customers under every window.
+ window_days  baseline_n  baseline_rate  baseline_ci_low  baseline_ci_high  recent_n  recent_rate  recent_ci_low  recent_ci_high  delta_pp  relative_change      z   p_value
+          30        4932         0.4625           0.4486            0.4764      4195       0.3945         0.3798          0.4094    -6.797           -0.147 -6.535 6.376e-11
+          60        4932         0.4986           0.4846            0.5125      4195       0.4288         0.4139          0.4439    -6.974          -0.1399 -6.656 2.823e-11
+          90        4932         0.5416           0.5276            0.5554      4195       0.4639         0.4488           0.479    -7.768          -0.1434 -7.397 1.388e-13
+>>> The decline is not an artefact of the 30-day choice: it is present and significant at every window tested.
+
+4.2 Ticket gradient with and without the 360 scoreable orders whose cs_tickets was imputed from the -1 sentinel:
+    orders (all scoreable orders)  repeat (all scoreable orders)  orders (excluding imputed cs_tickets)  repeat (excluding imputed cs_tickets)
+0                           32634                         0.5918                                  32274                                 0.5917
+1                            6006                         0.4833                                   6006                                 0.4833
+2                            1051                         0.4091                                   1051                                 0.4091
+3+                            261                         0.1954                                    261                                 0.1954
+
+4.3 Headline (order-level) decline, recent vs baseline quarters:
+  naive SE p = 1.14e-03   user-clustered SE p = 5.49e-03
+  Phase 2's chi-square treats orders as independent; clustering on user_id is the correct test for an order-level metric. New-customer tests are unaffected (one row per customer).

@@ -1,0 +1,3 @@
+customer_type,customers,gmv,avg_orders,avg_aov,avg_lifetime_gmv,customer_share,gmv_share
+One-time customer,6460,714341.0836,1.0,110.5791,110.5791,0.4628,0.1955
+Repeat customer (2+ orders),7499,2939541.6178,4.7104,87.0346,391.9911,0.5372,0.8045

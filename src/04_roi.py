@@ -96,9 +96,11 @@ def value_per_repeat(aov_segment):
     return aov_segment * LTV_MULT * GROSS_MARGIN
 
 
-log(f"\nValue of one incremental repeat, by segment AOV:")
-for lbl, a in [("blended", aov_blend), ("Electronics", 253.15), ("Home", 105.75),
-               ("Grocery", 32.17)]:
+log(f"\nValue of one incremental repeat, by segment AOV "
+    f"(blended = 2025Q1; categories = full-period AOV, illustrative):")
+cat_aov = model.groupby("category")["order_amount"].mean()
+for lbl, a in [("blended", aov_blend)] + [(c, cat_aov[c]) for c in
+                                          ("Electronics", "Home", "Grocery")]:
     log(f"  {lbl:<14} AOV ${a:>7,.2f} -> ${value_per_repeat(a):>7,.2f} per repeat")
 log("Targeting where AOV is high is not a detail -- it is most of the business case.")
 
@@ -263,7 +265,10 @@ log(f"  observational gap: {gap:.1f} pp")
 log(f"  addressable: {len(q_dep):,} orders in 2025Q1 extract -> "
     f"{len(q_dep) * ANNUALISE * SCALE:,.0f}/yr")
 
-AME_DISC_DEP = 14.94     # pp per 1.0 dependency, from 03_marginal_effects.csv
+# pp per 1.0 dependency. Read from Phase 3 rather than typed in; rounded to the
+# 2 dp published in REPORT.md so the business case is reproducible to the dollar.
+AME_DISC_DEP = round(-float(pd.read_csv(TAB / "03_marginal_effects.csv", index_col=0)
+                            .loc["disc_dep_c", "dy_dx_pp"]), 2)
 SHIFT = 0.25
 uplift3 = AME_DISC_DEP * SHIFT
 log(f"\nPlanning number: Phase 3 AME is {AME_DISC_DEP:.1f} pp per full unit of "
@@ -351,9 +356,13 @@ log(f"\n  Scale check: recommended incremental GMV is {pct(tot_gmv / gmv_yr)} of
 
 # --- Recovery framing --------------------------------------------------------
 n_recent = (users.cohort_month >= "2024-11").sum() * SCALE
-lost_users = (0.347 - 0.272) * n_recent
+# Same cohort windows as Phase 2 (02_cohort_retention.csv), not typed-in values.
+m1 = pd.read_csv(TAB / "02_cohort_retention.csv", index_col=0)["1"].dropna()
+m1_early, m1_late = m1.loc["2024-01":"2024-09"].mean(), m1.loc["2024-11":"2025-05"].mean()
+lost_users = (m1_early - m1_late) * n_recent
 log(f"\n--- What 'recovery' means in user terms ---")
-log(f"M+1 retention fell 7.6 pp (34.7% -> 27.2%). Against the {n_recent:,.0f} users "
+log(f"M+1 retention fell {(m1_early - m1_late) * 100:.1f} pp ({pct(m1_early)} -> "
+    f"{pct(m1_late)}). Against the {n_recent:,.0f} users "
     f"acquired since 2024-11, that is ~{lost_users:,.0f} users who would have "
     f"returned under the old service level and did not.")
 log(f"The recommended portfolio delivers "

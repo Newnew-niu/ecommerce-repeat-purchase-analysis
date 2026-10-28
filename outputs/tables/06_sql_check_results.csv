@@ -1,0 +1,10 @@
+check,n_values,max_abs_diff,passed
+"overall: orders, customers, GMV, AOV, frequency",5,2.0489096641540527e-08,True
+headline repeat: order counts by month,17,0.0,True
+headline repeat: rate by month (vs 4dp table),17,0.0,True
+new-customer repeat: cohort sizes,17,0.0,True
+new-customer repeat: rate by cohort (vs 4dp table),17,0.0,True
+"new-customer repeat: rate by cohort (vs kpis.py, exact)",17,0.0,True
+cohort M+1 retention (vs 02_cohort_retention.csv),17,5.551115123125783e-17,True
+AOV by category,7,3.836930773104541e-13,True
+median days to 2nd order,1,0.0,True

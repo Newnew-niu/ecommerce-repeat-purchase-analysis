@@ -24,7 +24,7 @@ cum_orders
 
 Downstream multiplier: one incremental repeat is worth 2.37 orders in expectation (itself + 1.37 follow-ons from the OBSERVED continuation chain, capped at 8 steps). Capped and observation-based, so it understates rather than flatters.
 
-Value of one incremental repeat, by segment AOV:
+Value of one incremental repeat, by segment AOV (blended = 2025Q1; categories = full-period AOV, illustrative):
   blended        AOV $  87.66 -> $  87.17 per repeat
   Electronics    AOV $ 253.15 -> $ 251.73 per repeat
   Home           AOV $ 105.75 -> $ 105.16 per repeat
@@ -124,7 +124,7 @@ CONSOLIDATED BUSINESS CASE (annualised, contribution margin)
   Scale check: recommended incremental GMV is 3.2% of the $26,758,823 annual run-rate, and net contribution is 2.1% of annual contribution. Retention programmes that claim more than a few points of either are usually double-counting.
 
 --- What 'recovery' means in user terms ---
-M+1 retention fell 7.6 pp (34.7% -> 27.2%). Against the 57,860 users acquired since 2024-11, that is ~4,339 users who would have returned under the old service level and did not.
+M+1 retention fell 7.6 pp (34.7% -> 27.2%). Against the 57,860 users acquired since 2024-11, that is ~4,374 users who would have returned under the old service level and did not.
 The recommended portfolio delivers 2,424 incremental repeat orders/yr. This is a partial recovery by design: Phase 3 showed ~51% of the controlled decline sits in systems the order log cannot observe (delivery speed, stockouts, assortment). Closing the rest needs instrumentation we do not currently have.
 
 ------------------------------------------------------------------------------

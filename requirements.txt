@@ -7,3 +7,7 @@ scikit-learn==1.6.1
 statsmodels==0.14.6
 matplotlib==3.10.7
 seaborn==0.13.2
+
+# Dashboard (dashboard/app.py)
+streamlit==1.52.2
+altair==6.0.0

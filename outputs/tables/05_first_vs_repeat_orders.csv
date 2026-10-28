@@ -1,0 +1,3 @@
+order_type,orders,gmv,aov,coupon_share,avg_tickets,return_rate,gmv_share
+First order,13959,1262870.7954,90.47,0.4058,0.2299,0.1186,0.3456
+Repeat order,27824,2391011.906,85.9334,0.4393,0.2296,0.1143,0.6544
