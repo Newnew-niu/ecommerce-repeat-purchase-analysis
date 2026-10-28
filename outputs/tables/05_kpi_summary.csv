@@ -1,0 +1,28 @@
+scope,kpi,unit,value,numerator,denominator,counting_unit
+Full period (2024-01..2025-06),Orders,count,41783.0,,,order
+Full period (2024-01..2025-06),Active customers,count,13959.0,,,customer
+Full period (2024-01..2025-06),GMV,usd,3653882.7014,,,order
+Full period (2024-01..2025-06),Average order value (AOV),usd,87.449,3653882.701400001,41783,order
+Full period (2024-01..2025-06),Purchase frequency (orders / active customer),ratio,2.9933,41783,13959,customer
+Full period (2024-01..2025-06),Order-level 30-day repeat rate (headline),rate,0.5681,22697,39952,order
+Full period (2024-01..2025-06),New-customer 30-day repeat rate,rate,0.4392,5935,13513,new customer
+Full period (2024-01..2025-06),90-day repeat customer rate,rate,0.5179,6405,12368,new customer
+Full period (2024-01..2025-06),Median days to 2nd order (repeaters only),days,15.0,,,repeating customer
+Baseline (2024Q2-Q3),Orders,count,14486.0,,,order
+Baseline (2024Q2-Q3),Active customers,count,5816.0,,,customer
+Baseline (2024Q2-Q3),GMV,usd,1293407.2488,,,order
+Baseline (2024Q2-Q3),Average order value (AOV),usd,89.2867,1293407.2488000002,14486,order
+Baseline (2024Q2-Q3),Purchase frequency (orders / active customer),ratio,2.4907,14486,5816,customer
+Baseline (2024Q2-Q3),Order-level 30-day repeat rate (headline),rate,0.5825,8438,14486,order
+Baseline (2024Q2-Q3),New-customer 30-day repeat rate,rate,0.4625,2281,4932,new customer
+Baseline (2024Q2-Q3),90-day repeat customer rate,rate,0.5416,2671,4932,new customer
+Baseline (2024Q2-Q3),Median days to 2nd order (repeaters only),days,15.0,,,repeating customer
+Recent (2025Q1-Q2),Orders,count,13772.0,,,order
+Recent (2025Q1-Q2),Active customers,count,5485.0,,,customer
+Recent (2025Q1-Q2),GMV,usd,1195765.1714,,,order
+Recent (2025Q1-Q2),Average order value (AOV),usd,86.8258,1195765.1714000003,13772,order
+Recent (2025Q1-Q2),Purchase frequency (orders / active customer),ratio,2.5108,13772,5485,customer
+Recent (2025Q1-Q2),Order-level 30-day repeat rate (headline),rate,0.5626,6718,11941,order
+Recent (2025Q1-Q2),New-customer 30-day repeat rate,rate,0.3873,1242,3207,new customer
+Recent (2025Q1-Q2),90-day repeat customer rate,rate,0.4617,952,2062,new customer
+Recent (2025Q1-Q2),Median days to 2nd order (repeaters only),days,14.0,,,repeating customer

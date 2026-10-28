@@ -1,0 +1,7 @@
+{
+  "name": "repeat-purchase-deck",
+  "private": true,
+  "description": "Builds presentation/Repeat_Purchase_Analysis.pptx from outputs/tables",
+  "scripts": { "build": "node build_deck.js" },
+  "dependencies": { "pptxgenjs": "3.12.0" }
+}

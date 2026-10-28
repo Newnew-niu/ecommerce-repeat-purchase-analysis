@@ -147,7 +147,9 @@ df.loc[neg, "order_amount"] = df.loc[neg, "order_amount"].abs()
 
 zero = df["order_amount"] == 0
 log(f"[2.8b] Zero amounts: {zero.sum():,}. Fully-comped orders -- retained "
-    f"(they are genuine engagement) but excluded from AOV statistics.")
+    f"(they are genuine engagement) and flagged `is_comped`. They count as orders "
+    f"in AOV (GMV / orders), lowering it by ~{pct(zero.mean(), 2)}; they are "
+    f"excluded only from the winsorisation percentile below.")
 df["is_comped"] = zero.astype(int)
 
 n_amt_null = df["order_amount"].isna().sum()

@@ -30,7 +30,7 @@ CLEANING ACTIONS
 [2.6] discount_used carries 4 distinct raw tokens ['0', '1', 'N', 'Y'] -- one upstream service writes Y/N, the other 1/0. Coerced to 0/1; 0 uncoercible.
 [2.7] cs_tickets == -1 sentinel ('unknown' from legacy CRM): 378 rows. Set to 0 and flagged -- the modal value is 0 (80.4%), so imputing 0 is the conservative choice and biases the ticket effect *downward*, not up.
 [2.8a] Negative amounts: 165. These are refunds written back with the wrong sign -- the purchase was real, so absolute value is taken and the row flagged.
-[2.8b] Zero amounts: 126. Fully-comped orders -- retained (they are genuine engagement) but excluded from AOV statistics.
+[2.8b] Zero amounts: 126. Fully-comped orders -- retained (they are genuine engagement) and flagged `is_comped`. They count as orders in AOV (GMV / orders), lowering it by ~0.30%; they are excluded only from the winsorisation percentile below.
 [2.8c] Missing amounts: 1,044 (2.50%). Imputed with the category median (amount is strongly category-driven; a global median would distort Electronics by ~4x).
 [2.8d] Amounts above the 99.9th pct ($938): 42. Winsorised to the cap rather than dropped -- they are plausible bulk orders, but left raw they would dominate every mean.
 

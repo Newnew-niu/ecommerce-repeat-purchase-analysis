@@ -1,0 +1,20 @@
+==============================================================================
+PHASE 6 -- SQL CROSS-CHECK
+==============================================================================
+
+SQLite 3.39.4: loaded 41,783 orders (raw columns only)
+Queries found: order_sequence, overall_kpis, headline_repeat_by_month, new_customer_repeat_by_cohort, cohort_m1_retention, aov_by_category, time_to_second_order
+Censoring cutoff: 2025-05-31 00:00:00
+
+--- Checks (tolerance 1e-9) ---
+  [PASS] overall: orders, customers, GMV, AOV, frequency      n=5    max|diff|=2.05e-08
+  [PASS] headline repeat: order counts by month               n=17   max|diff|=0.00e+00
+  [PASS] headline repeat: rate by month (vs 4dp table)        n=17   max|diff|=0.00e+00
+  [PASS] new-customer repeat: cohort sizes                    n=17   max|diff|=0.00e+00
+  [PASS] new-customer repeat: rate by cohort (vs 4dp table)   n=17   max|diff|=0.00e+00
+  [PASS] new-customer repeat: rate by cohort (vs kpis.py, exact) n=17   max|diff|=0.00e+00
+  [PASS] cohort M+1 retention (vs 02_cohort_retention.csv)    n=17   max|diff|=5.55e-17
+  [PASS] AOV by category                                      n=7    max|diff|=3.84e-13
+  [PASS] median days to 2nd order                             n=1    max|diff|=0.00e+00
+
+9/9 checks passed.

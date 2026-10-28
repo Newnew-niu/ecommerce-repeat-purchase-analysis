@@ -1,115 +1,167 @@
-# Repeat-Purchase Decline Analysis / 复购率下滑归因分析
+# E-commerce Repeat Purchase Analysis
 
-End-to-end analysis of a B2C e-commerce order log: data cleaning → cohort analysis →
-attribution modelling → business case.
+**Why did new customers stop coming back, and what should the business do about it?**
 
-**Main deliverable: [`REPORT.md`](REPORT.md)** (bilingual 中文/English).
+An end-to-end analytics project on an e-commerce order log (Jan 2024 – Jun 2025). It goes from raw, messy order data to a diagnosis, a driver model, a costed action plan, an interactive dashboard and an executive presentation.
 
----
+**Tools:** Python (pandas, statsmodels, scikit-learn) · SQL (SQLite window functions) · Streamlit + Altair · PowerPoint
 
-## Data provenance / 数据来源
+> **Data note:** the order log is **simulated** (`src/00_make_dataset.py`) because no production data was available. Realistic data-quality problems are injected, and the analysis never reads the simulator's settings; it rediscovers the patterns from the data. The project demonstrates analytical method. Its numbers are not real-world facts.
 
-No production extract was available, so `src/00_make_dataset.py` simulates the order
-log from an explicit generative model. Ground truth (ticket cliff, coupon dependency,
-category repeat gradients, service degradation from 2024-10) is hard-coded in that
-script only — **Phases 1–4 never read those parameters** and rediscover everything
-from the CSV. Absolute dollar figures assume the extract is a 10% user sample; all
-rates are unaffected.
+![Dashboard overview](docs/images/dashboard_hero.png)
 
-没有拿到生产库权限，订单流水由生成脚本模拟。真实规律写死在 `00_make_dataset.py` 里，
-下游脚本一律不读取，全部从 CSV 重新发现。金额基于「10% 抽样」假设外推，比率不受影响。
+## Key findings
 
----
+| | Baseline (2024 Q2–Q3) | Recent (2025 Q1–Q2) | Change |
+|---|---|---|---|
+| Headline 30-day repeat rate (what was reported) | 58.2% | 56.3% | -2.0pp |
+| **New-customer 30-day repeat rate** | **46.2%** | **38.7%** | **-7.5pp** (p = 2.6e-11) |
+| **Cohort M+1 retention** | **34.7%** | **27.2%** | **-7.6pp** |
 
-## Setup
+1. **The reported KPI hid the decline.** Loyal customers grew from 0% to 42% of orders, so the order-weighted average stayed flat while each new cohort came back less often. The decline holds at 30-, 60- and 90-day windows.
+2. **Support tickets are the clearest driver.** Repeat drops from 59% (no ticket) to 20% (3+ tickets); odds ratio 0.22 after controls. The share of orders with a ticket rose from 14% to 27%, concentrated in **Electronics and Home**, the highest-value categories.
+3. **Coupon *dependency*, not coupons, hurts repeat.** A coupon on a single order has no significant effect (OR 0.96, p = 0.28). Customers who habitually buy on coupon repeat ~15pp less.
+4. **About half of the decline is explained** by tickets, returns and coupon dependency. The rest needs data the order log does not have (delivery times, stockouts).
 
-```bash
-pip install -r requirements.txt
-```
+## Recommendations
 
-Built and verified on Python 3.10.10. `requirements.txt` pins the exact versions
-used; the pipeline is seeded and reproduces bit-identically on them.
+| # | Action | Evidence | How to validate | Base-case net / yr* |
+|---|---|---|---|---|
+| 1 | Report **new-customer repeat and cohort M+1** as primary KPIs | Headline masked a 7.5pp decline | Adopted in weekly review | No cost |
+| 2 | Fix **Electronics & Home** post-purchase experience | Lowest repeat, highest AOV, tickets up 2.9x / 1.7x | Staged rollout; tickets/order, 30-day repeat | $171k |
+| 3 | **Service recovery** at the 2nd ticket | Repeat cliff at the 3rd ticket | 10% holdout (2 tickets); 50/50 test (3+) | $50k |
+| 4 | **Test** reducing coupon dependency | Weakest causal evidence | A/B test before rollout | $18k if proven |
 
-## Run
+\*Planning estimates: model-based effect sizes, assumed costs and a 10% sample assumption. With zero repeat uplift the portfolio loses money, so each lever must be tested first. Details: [REPORT.md §5](REPORT.md#5-phase-4-financial--roi-impact).
 
-`data/` is not tracked in this repo — it is ~19 MB of fully derived files that the
-seeded generator rebuilds deterministically. **`00_make_dataset.py` is therefore a
-required first step, not an optional one.**
+## Deliverables
 
-```bash
-cd src
-python 00_make_dataset.py     # REQUIRED FIRST -- generates data/raw/orders_data.csv
-python 01_clean_features.py   # Phase 1: cleaning + feature engineering
-python 02_eda_cohort.py       # Phase 2: EDA, cohorts, tipping points
-python 03_modeling.py         # Phase 3: logit + GBM attribution
-python 04_roi.py              # Phase 4: business case
-```
-
-Scripts are order-dependent. Each writes a full log to `logs/` and results to
-`outputs/`. Total runtime ~2 minutes.
-
-To confirm your run matches the published report, check that
-`outputs/tables/04_business_cases.csv` sums to a net contribution of **240,321**
-and a net ROI of **0.7436** across the four base-case rows.
+| Deliverable | Link |
+|---|---|
+| Full analytical report | [`REPORT.md`](REPORT.md) |
+| Executive presentation (15 slides) | [`presentation/Repeat_Purchase_Analysis.pdf`](presentation/Repeat_Purchase_Analysis.pdf) · [editable .pptx](presentation/Repeat_Purchase_Analysis.pptx) |
+| Interactive dashboard | [`dashboard/app.py`](dashboard/app.py) (run locally, see below) · [screenshots](#dashboard) |
+| KPI definitions | [`docs/kpi_definitions.md`](docs/kpi_definitions.md) |
+| Data dictionary | [`docs/data_dictionary.md`](docs/data_dictionary.md) |
+| SQL queries | [`sql/kpi_queries.sql`](sql/kpi_queries.sql) |
+| Project self-assessment | [`docs/portfolio_review.md`](docs/portfolio_review.md) |
 
 ---
 
-## Layout
+## Business problem
 
-```
-src/                           analysis scripts + common.py
-logs/                          per-phase audit logs (full numeric output)
-outputs/figures/               10 charts
-outputs/tables/                25 result tables
-REPORT.md                      the deliverable
+Repeat customers are 54% of customers but generate **80% of GMV**. Their value comes from ordering again (4.7 orders on average), not from bigger baskets. The business reported a stable 30-day repeat rate and saw no problem. This project asks:
 
-data/raw/orders_data.csv       generated locally -- 42,776 rows, intentionally dirty
-data/processed/                generated locally -- cleaned orders, features, model table
-```
+1. Is repeat purchase really declining, or is it noise?
+2. Which customers are affected: new or established?
+3. What is associated with the decline: service quality, category, coupons or channel?
+4. Which actions are worth funding, and how should they be validated?
 
-`data/` is gitignored; both paths appear after you run `00_make_dataset.py`.
+**Audience:** e-commerce and CRM leadership (presentation); analysts (report and code).
 
----
+## Dataset
 
-## Headline result
+| | |
+|---|---|
+| Source | Simulated by `src/00_make_dataset.py` (seeded, deterministic) |
+| Size | 42,776 raw rows → 41,783 clean orders, 13,959 customers |
+| Fields | order id, customer id, timestamp, amount, category, coupon flag, support tickets, return flag, acquisition channel |
+| Injected issues | duplicates, mixed date formats, future dates, QA accounts, sign errors, nulls, sentinel values, mixed boolean encodings, category spelling drift, outliers |
 
-The reported 30-day repeat rate fell only 2.0pp and looked like noise. It was
-masked by order-composition drift — 41.7% of 2025 orders come from deep-lifecycle
-repeaters (vs 0% in 2024-01) who repeat at ~70%.
+Full schema: [`docs/data_dictionary.md`](docs/data_dictionary.md).
 
-Measured survivorship-free, **new-user 30-day repeat fell 46.2% → 38.7%
-(-7.5pp, -16.3% relative, p = 2.6e-11)** and cohort M+1 retention fell 34.7% → 27.2%.
+## Method
 
-Three drivers, all significant with user-clustered standard errors:
-
-| Driver | Effect | Evidence |
+| Phase | Script | What it does |
 |---|---|---|
-| 3+ support contacts | OR 0.220 [0.161, 0.302] | cliff at the 3rd ticket, -18.4pp |
-| Coupon dependency | OR 0.495 [0.452, 0.542] | -15.1pp, ≤40% vs ≥80% history |
-| Electronics/Home category | OR 0.557 / 0.767 | tickets up 2.9x / 1.7x since 2024-01 |
+| 0 | `00_make_dataset.py` | Generates the raw order log |
+| 1 | `01_clean_features.py` | Cleans data (every removed row counted), right-censors the last 30 days, builds customer and RFM features |
+| 2 | `02_eda_cohort.py` | Three repeat metrics, cohort retention, segment profiles, tipping points (tickets, coupons) |
+| 3 | `03_modeling.py` | Logistic regression with **user-clustered SEs**; gradient boosting on a **forward-in-time holdout** (AUC 0.72); mediation ladder |
+| 4 | `04_roi.py` | Business cases sized on actual counts, each tested against a **break-even gate**; sensitivity grid |
+| 5 | `05_kpis_robustness.py` | KPI table with numerators/denominators; first-time vs repeat customers; robustness checks (30/60/90-day windows, imputed data, clustered tests) |
+| 6 | `06_sql_checks.py` | Re-computes core KPIs in SQL from raw columns; **9/9 checks match** pandas |
 
-Recommended portfolio: **$852k incremental GMV, $240k net contribution, 0.74x net ROI**
-(3.2% of the $26.8M run-rate). 13 of 18 sensitivity scenarios are value-positive.
+Three analytical traps were hit and corrected along the way, and each is documented in the report: **survivorship bias** in a cohort trend test, a **confounder treated as a mediator**, and **mechanical confounding** in coupon-dependency bands.
 
----
+## KPI definitions (summary)
 
-## Methodology notes worth reading
+| KPI | Unit | Numerator ÷ denominator |
+|---|---|---|
+| Order-level 30-day repeat | Order | orders followed by another order ≤ 30 days ÷ orders ≥ 30 days before snapshot |
+| New-customer 30-day repeat | Customer | first-time customers reordering ≤ 30 days ÷ first-time customers ≥ 30 days before snapshot |
+| Cohort M+1 retention | Customer × month | cohort customers ordering in the next calendar month ÷ cohort size |
+| AOV | Order | GMV ÷ orders |
 
-Three traps were hit and corrected during this analysis; each is documented in
-`REPORT.md` rather than quietly fixed:
+Repeat rate, retention rate and cohort retention are not interchangeable; see [`docs/kpi_definitions.md`](docs/kpi_definitions.md).
 
-1. **Survivorship bias** — a "mature cohort calendar trend" test showed repeat
-   *rising* 59% → 75%, because only hardcore repeaters from 2024 cohorts still
-   order in 2025. Test discarded; M+1 retention used instead.
-2. **Confounder placed as mediator** — the first mediation ladder introduced
-   composition controls alongside the service variables, yielding an insignificant
-   baseline that flipped sign and a meaningless "392% mediated". Confounders belong
-   in the baseline.
-3. **Mechanical confounding in dependency bands** — a one-and-done user who used a
-   coupon has `cum_discount_rate = 1.0`. The raw top band was mostly one-order users,
-   not dependent users. De-confounded by restricting to users with 3+ prior orders.
+## Dashboard
 
-Also: 30-day censoring is applied (orders within 30 days of the snapshot are excluded,
-or the most recent months show a fake decline); standard errors are clustered on
-`user_id`; the train/test split is strictly forward-in-time; and every business case
-faces a computed break-even gate rather than an asserted one.
+A Streamlit dashboard with KPI tiles, filters (month range, acquisition channel, category) and six tabs. It uses the same KPI code as the analysis (`src/kpis.py`), and an automated test checks that its numbers match the analysis tables. It runs locally and has **not** been deployed publicly.
+
+| Overview | Cohorts |
+|---|---|
+| ![Overview](docs/images/dashboard_01_overview.png) | ![Cohorts](docs/images/dashboard_02_retention_cohorts.png) |
+| **Drivers** | **Recommendations** |
+| ![Drivers](docs/images/dashboard_04_drivers.png) | ![Recommendations](docs/images/dashboard_05_recommendations.png) |
+
+More: [customer behaviour](docs/images/dashboard_03_customer_behavior.png) · [definitions](docs/images/dashboard_06_data_definitions.png).
+
+## How to run
+
+Requires Python 3.10+ (built and verified on 3.10.10).
+
+```bash
+git clone https://github.com/Newnew-niu/ecommerce-repeat-purchase-analysis.git
+cd ecommerce-repeat-purchase-analysis
+pip install -r requirements.txt
+
+python src/run_all.py            # generates data/ and reruns all 7 phases (~1-2 min)
+streamlit run dashboard/app.py   # opens the dashboard at http://localhost:8501
+python tests/test_dashboard.py   # dashboard smoke tests (or: pytest tests/)
+```
+
+`data/` is not stored in git: it is rebuilt deterministically by the seeded generator, so `run_all.py` (or at least `00` and `01`) must run first. The dashboard offers to build the data if it is missing. To confirm your run matches the report, `outputs/tables/04_business_cases.csv` should give a base-case net contribution of **240,321** and net ROI of **0.7436**.
+
+**Rebuilding the presentation** (optional; needs Node.js, and PowerPoint for the PDF):
+
+```bash
+cd presentation/build && npm install && npm run build                  # writes the .pptx from outputs/tables
+powershell -ExecutionPolicy Bypass -File presentation/build/export_pdf.ps1   # .pptx -> .pdf (Windows + PowerPoint)
+```
+
+## Repository structure
+
+```
+├── README.md
+├── REPORT.md                  full analytical report
+├── requirements.txt
+├── src/                       pipeline: 00–06, kpis.py (KPI definitions), run_all.py
+├── sql/kpi_queries.sql        SQL version of the core KPIs
+├── dashboard/app.py           Streamlit dashboard
+├── tests/test_dashboard.py    dashboard smoke tests
+├── presentation/              executive deck (.pptx, .pdf) + build/ (generator script)
+├── docs/                      KPI definitions, data dictionary, portfolio review, screenshots
+├── outputs/figures/           report charts
+├── outputs/tables/            every reported number, as CSV
+├── logs/                      full output of each phase
+└── data/                      generated locally (git-ignored)
+```
+
+## Limitations
+
+- **Simulated data:** methods transfer; numbers and effect sizes do not.
+- **Observational:** no experiments were run; the ticket and coupon effects are associations that survive controls, not proven causes.
+- **About half of the decline is unexplained** by the available fields.
+- **Dollar figures** depend on a 10% sample assumption and planning costs.
+- **Timing:** support tickets and returns are realised after purchase and may overlap the 30-day outcome window.
+
+## Possible next steps
+
+- Apply the pipeline to a real public dataset (e.g. the Olist Brazilian e-commerce dataset) to test the method on genuinely unknown patterns.
+- Add timestamped support/return events to remove outcome-window overlap.
+- Deploy the dashboard (e.g. Streamlit Community Cloud) and add a customer-level churn-risk score.
+
+## License
+
+MIT, see [LICENSE](LICENSE).

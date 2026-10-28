@@ -16,3 +16,6 @@ venv/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Presentation build tooling (rebuilt by `npm install` in presentation/build)
+node_modules/
