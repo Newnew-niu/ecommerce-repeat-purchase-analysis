@@ -1,0 +1,8 @@
+# Dependencies for the dashboard only (Streamlit Community Cloud reads this file
+# because it sits next to dashboard/app.py). Same pandas/numpy versions as the
+# analysis, so the generated data and every KPI match REPORT.md exactly.
+# Requires Python 3.10-3.13 (these versions have no Python 3.14 wheels).
+pandas==2.2.3
+numpy==2.2.5
+streamlit==1.52.2
+altair==6.0.0

@@ -39,11 +39,19 @@ MIN_CELL = 30
 # ===========================================================================
 # DATA
 # ===========================================================================
-def build_data():
-    """Generate and clean the dataset (Phases 0-1). ~30 seconds."""
+@st.cache_resource(show_spinner=False)
+def ensure_data():
+    """Generate and clean the dataset (Phases 0-1, ~30 s) if it is missing.
+
+    data/ is not stored in git, so a fresh clone or a cloud deployment starts
+    without it. cache_resource runs this once per server process, so concurrent
+    first visitors do not trigger parallel builds.
+    """
+    if (PROC / "orders_clean.csv").exists():
+        return
     for script in ("00_make_dataset.py", "01_clean_features.py"):
         subprocess.run([sys.executable, script], cwd=ROOT / "src", check=True,
-                       capture_output=True)
+                       capture_output=True, text=True)
 
 
 @st.cache_data(show_spinner="Loading orders...")
@@ -63,15 +71,13 @@ def table(name, **kw):
 
 
 if not (PROC / "orders_clean.csv").exists():
-    st.title("Repeat Purchase Dashboard")
-    st.warning("Processed data not found. The dataset is generated locally "
-               "(it is not stored in git). Build it now, or run "
-               "`python src/run_all.py` from the repository root.")
-    if st.button("Build dataset (about 30 seconds)"):
-        with st.spinner("Generating and cleaning data..."):
-            build_data()
-        st.rerun()
-    st.stop()
+    with st.spinner("First visit: generating the simulated dataset (about 30 seconds)..."):
+        try:
+            ensure_data()
+        except subprocess.CalledProcessError as e:
+            st.error("Could not generate the dataset. Run `python src/run_all.py` locally.")
+            st.code((e.stderr or "")[-2000:])
+            st.stop()
 
 orders, cust_meta, users = load()
 MONTHS = sorted(orders["order_month"].unique())
